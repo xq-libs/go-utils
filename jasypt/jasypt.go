@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	PBEWithMD5AndDES            = "PBEWithMD5AndDES"
-	PBEWITHHMACSHA512ANDAES_256 = "PBEWITHHMACSHA512ANDAES_256"
+	PBEWithMD5AndDES            = "PBEWITHMD5ANDDES"
+	PBEWithHMACSHA512AndAES_256 = "PBEWITHHMACSHA512ANDAES_256"
 )
 
 var (
@@ -54,7 +54,7 @@ func GetJasypt(opts Options) Jasypt {
 	}
 	if opts.Algorithm == PBEWithMD5AndDES {
 		return &FirstJasypt{Opts: opts}
-	} else if opts.Algorithm == PBEWITHHMACSHA512ANDAES_256 {
+	} else if opts.Algorithm == PBEWithHMACSHA512AndAES_256 {
 		return &SecondJasypt{Opts: opts}
 	} else {
 		return &FirstJasypt{Opts: opts}

@@ -55,6 +55,14 @@ func DecodeIntBase10(str string) (int64, error) {
 	return strconv.ParseInt(str, 10, 64)
 }
 
+func EncodeIntBase16(id int64) string {
+	return strconv.FormatInt(id, 16)
+}
+
+func DecodeIntBase16(str string) (int64, error) {
+	return strconv.ParseInt(str, 16, 64)
+}
+
 func EncodeIntBase32(id int64) string {
 	return encodeIntBase(id, 32, CODE32)
 }
@@ -103,7 +111,7 @@ func encodeIntBase(id int64, size int64, m string) string {
 	}
 	r := make([]byte, 0)
 	for id > 0 {
-		r = append(r, m[id % size])
+		r = append(r, m[id%size])
 		id /= size
 	}
 	return string(reverseArray(r))
@@ -116,13 +124,13 @@ func decodeIntBase(str string, size int64, m map[byte]int) (int64, error) {
 	}
 	var r int64 = 0
 	for i := range []byte(str) {
-		r = r * size + int64(m[str[i]])
+		r = r*size + int64(m[str[i]])
 	}
 	return r, nil
 }
 
 func reverseArray(arr []byte) []byte {
-	for i, j := 0, len(arr) - 1; i < j; i, j = i + 1, j -1 {
+	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
 		arr[i], arr[j] = arr[j], arr[i]
 	}
 	return arr

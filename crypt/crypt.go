@@ -6,9 +6,7 @@ import (
 	"crypto/des"
 )
 
-/*
- * PKCSPadding
- */
+// PKCS5Padding
 func PKCS5Padding(data []byte, blockSize int) []byte {
 	return PKCSPadding(data, 8)
 }
@@ -25,9 +23,7 @@ func PKCSUnPadding(data []byte) []byte {
 	return data[:(length - paddingLength)]
 }
 
-/*
- * DES
- */
+// DES
 func DesEncrypt(data []byte, key []byte, iv []byte) ([]byte, error) {
 	block, err := des.NewCipher(key)
 	if err != nil {
