@@ -33,5 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup Git
+        run: |
+          git config --global user.email "ops@xqcao.com"
+          git config --global user.name "Github Ops"
+
       - name: Release
         run: make release
