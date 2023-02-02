@@ -9,12 +9,11 @@ type Optional[T any] struct {
 
 func OfEmpty[T any]() Optional[T] {
 	return Optional[T]{
-		Data:    nil,
 		HasData: false,
 	}
 }
 
-func Of[T any](t any) Optional[T] {
+func Of[T any](t T) Optional[T] {
 	return Optional[T]{
 		Data:    t,
 		HasData: true,
@@ -29,7 +28,6 @@ func Map[T any, R any](o Optional[T], f types.Function[T, R]) Optional[R] {
 		}
 	} else {
 		return Optional[R]{
-			Data:    nil,
 			HasData: false,
 		}
 	}
@@ -40,7 +38,6 @@ func FlatMap[T any, R any](o Optional[Optional[T]], f types.Function[T, R]) Opti
 		return Map(o.Data, f)
 	} else {
 		return Optional[R]{
-			Data:    nil,
 			HasData: false,
 		}
 	}
@@ -54,7 +51,6 @@ func (o *Optional[T]) Filter(p types.Predicate[T]) Optional[T] {
 		}
 	} else {
 		return Optional[T]{
-			Data:    nil,
 			HasData: false,
 		}
 	}
