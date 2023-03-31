@@ -1,17 +1,15 @@
 package mathutil
 
-type Number interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64
-}
+import "github.com/xq-libs/go-utils/types"
 
-func MaxNumber[T Number](a, b T) T {
+func MaxNumber[T types.Number](a, b T) T {
 	if a >= b {
 		return a
 	}
 	return b
 }
 
-func MinNumber[T Number](a, b T) T {
+func MinNumber[T types.Number](a, b T) T {
 	if a <= b {
 		return a
 	}
