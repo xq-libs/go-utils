@@ -13,5 +13,5 @@ test:
 release:
 	git fetch --tags
 	git tag -a v${VERSION} -m "Release version ${VERSION}"
-	git push --tags
+	git push -f --tags
 
