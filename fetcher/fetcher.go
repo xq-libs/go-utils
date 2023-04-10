@@ -29,9 +29,17 @@ func NewFetcher(c Config) *Fetcher {
 	return &Fetcher{BaseConfig: config, BaseClient: newClient(config)}
 }
 
-func (c *Fetcher) GetJson(url string, result any) (*http.Response, error) {
+func (f *Fetcher) AddHeader(key string, value string) {
+	f.BaseConfig.AddHeader(key, value)
+}
+
+func (f *Fetcher) AddParam(key string, value string) {
+	f.BaseConfig.AddHeader(key, value)
+}
+
+func (f *Fetcher) GetJson(url string, result any) (*http.Response, error) {
 	// 1.Do request
-	res, err := c.Get(url)
+	res, err := f.Get(url)
 	if err != nil {
 		return res, err
 	}
@@ -39,18 +47,18 @@ func (c *Fetcher) GetJson(url string, result any) (*http.Response, error) {
 	return res, readJsonFromResponse(res, result)
 }
 
-func (c *Fetcher) Get(url string) (*http.Response, error) {
+func (f *Fetcher) Get(url string) (*http.Response, error) {
 	// 1.Create a new config
-	config := c.BaseConfig.GetCopy()
+	config := f.BaseConfig.GetCopy()
 	config.Url = url
 	config.Method = http.MethodGet
 	// 2.Do request
-	return c.Do(config)
+	return f.Do(config)
 }
 
-func (c *Fetcher) PostJson(url string, body interface{}, result any) (*http.Response, error) {
+func (f *Fetcher) PostJson(url string, body interface{}, result any) (*http.Response, error) {
 	// 1.Do request
-	res, err := c.Post(url, body)
+	res, err := f.Post(url, body)
 	if err != nil {
 		return res, err
 	}
@@ -58,9 +66,9 @@ func (c *Fetcher) PostJson(url string, body interface{}, result any) (*http.Resp
 	return res, readJsonFromResponse(res, result)
 }
 
-func (c *Fetcher) Post(url string, body interface{}) (*http.Response, error) {
+func (f *Fetcher) Post(url string, body interface{}) (*http.Response, error) {
 	// 1.Create a new config
-	config := c.BaseConfig.GetCopy()
+	config := f.BaseConfig.GetCopy()
 	config.Url = url
 	config.Method = http.MethodPost
 	config.AddHeader("Content-Type", "application/json")
@@ -71,12 +79,12 @@ func (c *Fetcher) Post(url string, body interface{}) (*http.Response, error) {
 	}
 	config.Body = bodyReader
 	// 3.Do request
-	return c.Do(config)
+	return f.Do(config)
 }
 
-func (c *Fetcher) PutJson(url string, body interface{}, result any) (*http.Response, error) {
+func (f *Fetcher) PutJson(url string, body interface{}, result any) (*http.Response, error) {
 	// 1.Do request
-	res, err := c.Post(url, body)
+	res, err := f.Post(url, body)
 	if err != nil {
 		return res, err
 	}
@@ -84,9 +92,9 @@ func (c *Fetcher) PutJson(url string, body interface{}, result any) (*http.Respo
 	return res, readJsonFromResponse(res, result)
 }
 
-func (c *Fetcher) Put(url string, body interface{}) (*http.Response, error) {
+func (f *Fetcher) Put(url string, body interface{}) (*http.Response, error) {
 	// 1.Create a new config
-	config := c.BaseConfig.GetCopy()
+	config := f.BaseConfig.GetCopy()
 	config.Url = url
 	config.Method = http.MethodPut
 	config.AddHeader("Content-Type", "application/json")
@@ -97,12 +105,12 @@ func (c *Fetcher) Put(url string, body interface{}) (*http.Response, error) {
 	}
 	config.Body = bodyReader
 	// 3.Do request
-	return c.Do(config)
+	return f.Do(config)
 }
 
-func (c *Fetcher) DeleteJson(url string, result any) (*http.Response, error) {
+func (f *Fetcher) DeleteJson(url string, result any) (*http.Response, error) {
 	// 1.Do request
-	res, err := c.Get(url)
+	res, err := f.Get(url)
 	if err != nil {
 		return res, err
 	}
@@ -110,16 +118,16 @@ func (c *Fetcher) DeleteJson(url string, result any) (*http.Response, error) {
 	return res, readJsonFromResponse(res, result)
 }
 
-func (c *Fetcher) Delete(url string) (*http.Response, error) {
+func (f *Fetcher) Delete(url string) (*http.Response, error) {
 	// 1.Create a new config
-	config := c.BaseConfig.GetCopy()
+	config := f.BaseConfig.GetCopy()
 	config.Url = url
 	config.Method = http.MethodDelete
 	// 2.Do request
-	return c.Do(config)
+	return f.Do(config)
 }
 
-func (c *Fetcher) Do(cfg Config) (*http.Response, error) {
+func (f *Fetcher) Do(cfg Config) (*http.Response, error) {
 	// 1.Create Request
 	requestUrl := getRequestUrl(cfg.BaseUrl, cfg.Url, cfg.Params)
 	log.Printf("Send Request Method: %s, Url: %s \n", cfg.Method, requestUrl)
@@ -133,7 +141,7 @@ func (c *Fetcher) Do(cfg Config) (*http.Response, error) {
 	// 3.Add auth
 	appendBaseAuth(req, cfg.Auth)
 	// 4.Do Request
-	res, err := c.BaseClient.Do(req)
+	res, err := f.BaseClient.Do(req)
 	if err != nil {
 		log.Printf("Send request failure: %v", err)
 		return nil, err
@@ -149,7 +157,11 @@ func getRequestUrl(baseUrl string, urlPath string, params map[string]string) str
 	}
 	// Append url path
 	if len(urlPath) > 0 {
-		u += urlPath
+		if strings.HasPrefix(urlPath, "http://") || strings.HasPrefix(urlPath, "https://") {
+			u = urlPath
+		} else {
+			u += urlPath
+		}
 	}
 	// Append params
 	if params != nil && len(params) > 0 {
